@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var searchText = "Mew"
+    @State private var searchText = "Pikachu"
     @State private var pokemon: Pokemon? = nil
     
     @State private var errorMessage: String? = nil
@@ -138,6 +138,7 @@ struct PokemonView: View {
                     //.listRowBackground(<#T##view: View?##View?#>)
                     .background(Color.yellow)
                     .cornerRadius(14)
+                    .listRowSeparator(.hidden)
                     //Text(pokemon.abilities.first ?? "no abilities")
                 } header : {
                     Text("Abilities")
@@ -145,17 +146,19 @@ struct PokemonView: View {
                 }
                 
                 Section {
-                    ForEach(pokemon.abilities, id:\.self) {
+                    ForEach(pokemon.types, id:\.self) {
                         ability in PokemonViewRows(pokeText: ability)
                     }
                     .background(Color.yellow)
                     .cornerRadius(14)
+                    .listRowSeparator(.hidden)
                     //Text(pokemon.abilities.first ?? "no abilities")
                 } header : {
                     Text("Types")
                 }
             }
-            
+            .environment(\.defaultMinListRowHeight, 80)
+        
             
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.green)
