@@ -100,10 +100,41 @@ struct ContentView: View {
     }
 
 struct PokemonView: View {
+    
+    
     let pokemon: Pokemon
+    @State private var tappingIndex: Int = 0
+    @State private var isAnimating: Bool = false
+    
+    func changePokeImage() {
+        let maxCount = pokemon.imageURLs.count - 1
+        if tappingIndex == maxCount {
+            tappingIndex = 0
+        } else {
+            tappingIndex += 1
+        }
+    }
+    
+    func loopImages() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            if !isAnimating {
+                timer.invalidate()
+            } else {
+                changePokeImage()
+            }
+        }
+    }
+    
+    func startOrStopAnimation () {
+        isAnimating = !isAnimating
+        loopImages()
+    }
+    
+   
     var body: some View {
+        
         VStack {
-            AsyncImage(url: pokemon.imageURLs.first) {
+            AsyncImage(url: pokemon.imageURLs[tappingIndex]) {
                 phase in
                 switch phase {
                 case .empty:
@@ -113,6 +144,11 @@ struct PokemonView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 200, maxHeight: 200)
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 1))
+                            {startOrStopAnimation()
+                            }
+                        }
                 case .failure:
                     EmptyView()
                 @unknown default:
@@ -135,7 +171,7 @@ struct PokemonView: View {
                     ForEach(pokemon.abilities, id:\.self) {
                         poketype in PokemonViewRows(pokeText: poketype)
                     }
-                    //.listRowBackground(<#T##view: View?##View?#>)
+                    //.listRowBackground()
                     .background(Color.yellow)
                     .cornerRadius(14)
                     .listRowSeparator(.hidden)
@@ -170,8 +206,12 @@ struct PokemonViewRows: View {
     let pokeText: String
     
     var body: some View {
-        Text(pokeText)
-            .font(.title)
+        HStack {
+            Text(pokeText)
+                .font(.title)
+                .padding(.horizontal, 10)
+            Spacer()
+        }
         
     }
 }
